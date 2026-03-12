@@ -176,65 +176,6 @@ export default function RegisterPage() {
 
                         <FormField
                             control={form.control}
-                            name="dateOfBirth"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Date of Birth</FormLabel>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                className="w-full h-12 justify-start text-left"
-                                            >
-                                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                                {field.value
-                                                    ? format(field.value, "yyyy/MM/dd")
-                                                    : "Pick a date"}
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent>
-                                            <Calendar
-                                                mode="single"
-                                                captionLayout="dropdown"
-                                                selected={field.value}
-                                                onSelect={field.onChange}
-                                                disabled={(date) => date > new Date()}
-                                            />
-                                        </PopoverContent>
-                                    </Popover>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="gender"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Gender</FormLabel>
-                                    <Select
-                                        onValueChange={field.onChange}
-                                        defaultValue={field.value}
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger className="h-12">
-                                                <SelectValue placeholder="Select gender" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="male">Male</SelectItem>
-                                            <SelectItem value="female">Female</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
                             name="password"
                             render={({ field }) => (
                                 <FormItem>
@@ -313,6 +254,69 @@ export default function RegisterPage() {
                                 </FormItem>
                             )}
                         />
+
+                        <FormField
+                            control={form.control}
+                            name="dateOfBirth"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Date of Birth</FormLabel>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                className="w-full h-12 justify-start text-left"
+                                            >
+                                                <CalendarIcon className="mr-2 h-6 w-6" />
+                                                {field.value
+                                                    ? format(field.value, "yyyy/MM/dd")
+                                                    : "Pick a date"}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent >
+                                            <Calendar
+                                                className="[--cell-size:--spacing(9)] md:[--cell-size:--spacing(9)]"
+
+                                                mode="single"
+                                                captionLayout="dropdown"
+                                                selected={field.value}
+                                                onSelect={field.onChange}
+                                                disabled={(date) => date > new Date()}
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="gender"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Gender</FormLabel>
+                                    <Select
+                                        onValueChange={field.onChange}
+                                        defaultValue={field.value}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger className="h-14 w-full">
+                                                <SelectValue placeholder="Select gender" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="male">Male</SelectItem>
+                                            <SelectItem value="female">Female</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+
 
                         <Button
                             type="submit"

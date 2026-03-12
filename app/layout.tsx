@@ -2,8 +2,7 @@
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { SessionProvider } from "next-auth/react";
-import { Toaster } from "@/components/ui/sonner";
+import Providers from "./providers";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -18,7 +17,6 @@ const geistMono = Geist_Mono({
 });
 
 
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -26,14 +24,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={cn("font-sans", inter.variable)}>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <SessionProvider>
-          {children}
-          <Toaster position="top-center" richColors />
-
-        </SessionProvider>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
