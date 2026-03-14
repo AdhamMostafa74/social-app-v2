@@ -18,6 +18,7 @@ import {
     DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { usePostAction } from "@/hooks/PostHooks";
+import { privacyConfig } from "../privacyOptions/Privacy";
 
 
 interface PostCardProps {
@@ -54,11 +55,13 @@ export default function PostCard({ post, id, token }: PostCardProps) {
         return `${years}y`;
     };
 
+    const PrivacyIcon =
+        privacyConfig[post.privacy as keyof typeof privacyConfig].icon;
 
 
 
     return (
-        <div className="mx-10 rounded-2xl border bg-white p-4 shadow-lg">
+        <div className="mx-10 rounded-2xl border my-6  p-4 shadow-lg">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -85,8 +88,14 @@ export default function PostCard({ post, id, token }: PostCardProps) {
                             <span className="text-sm text-gray-400">
                                 • {formatRelativeTime(post.createdAt)}
                             </span>
+                            <PrivacyIcon className="h-3 w-3 text-gray-400" />
+                            <span className="text-sm text-gray-400">
+                                {
 
-                            <span className="text-sm text-gray-400">• Public</span>
+
+                                    privacyConfig[post.privacy as keyof typeof privacyConfig].label
+                                }
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -135,11 +144,18 @@ export default function PostCard({ post, id, token }: PostCardProps) {
                         height={800}
                         className="w-full object-cover"
                     />
+
+
                 </div>
+
             )}
+            <div className="flex gap-5 justify-end p-2 ">
+                <span>{post.sharesCount} Shares</span>
+                <span>{post.commentsCount} Comments</span>
+            </div>
 
             {/* Footer */}
-            <div className="mt-4 flex items-center justify-between border-t pt-4">
+            <div className="mt-2 flex items-center justify-between border-t pt-2">
                 <div className="flex items-center gap-6 text-gray-600">
 
                     {/* Like Button */}
@@ -158,13 +174,11 @@ export default function PostCard({ post, id, token }: PostCardProps) {
                     {/* Comment Button */}
                     <button className="flex items-center gap-2 transition hover:text-blue-500">
                         <MessageCircle className="h-5 w-5" />
-                        <span>{post.commentsCount} Comments</span>
                     </button>
 
                     {/* Share Button */}
                     <button className="flex items-center gap-2 transition hover:text-green-500">
                         <Share2 className="h-5 w-5" />
-                        <span>{post.sharesCount} Shares</span>
                     </button>
                 </div>
 

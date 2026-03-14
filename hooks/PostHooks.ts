@@ -1,17 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
-import { api } from "@/services/PostServices";
+import { api, createPostApi } from "@/services/PostServices";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PostActions } from "@/services/PostServices";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
-export function usePosts(initialData?: unknown) {
+export function usePosts(endPoint: string, queryKey: string, initialData?: unknown) {
     const { data: session } = useSession();
+    const subQueryKey = "posts"
 
     return useQuery({
-        queryKey: ["posts"],
+        queryKey: [subQueryKey, queryKey],
         queryFn: async () => {
-            const res = await fetch(`${api}posts`, {
+            const res = await fetch(`${api}${endPoint}`, {
                 headers: {
                     Authorization: `Bearer ${session?.user?.data?.token}`,
                 },
@@ -52,3 +53,35 @@ export function usePostAction() {
 
     });
 }
+
+type CreatePostParams = {
+    token: string | undefined;
+    formData: FormData;
+};
+
+export function useCreatePost() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ token, formData }: CreatePostParams) =>
+            createPostApi({
+                token,
+                formData,
+            }),
+
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["posts"],
+            });
+
+            toast.success("Post created", {
+                duration: 1500,
+            });
+        },
+
+        onError: () => {
+            toast.error("Something went wrong");
+        },
+    });
+}
+

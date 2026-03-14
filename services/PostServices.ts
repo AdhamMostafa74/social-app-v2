@@ -40,3 +40,24 @@ export async function PostActions({
 
     return res.json();
 }
+export async function createPostApi({
+    token,
+    formData,
+}: {
+    token: string | undefined;
+    formData: FormData;
+}) {
+    const res = await fetch(`${api}posts`, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+    });
+
+    if (!res.ok) {
+        throw new Error("Action failed");
+    }
+
+    return res.json();
+}

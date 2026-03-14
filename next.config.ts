@@ -10,8 +10,25 @@ const nextConfig: NextConfig = {
                 pathname: "/**",
 
             },
+            {
+                protocol: "https",
+                hostname: "i.pravatar.cc",
+                pathname: "/**",
+
+            },
         ],
     },
+
+    async redirects() {
+        return [
+            {
+                source: '/',
+                destination: '/home',
+                permanent: false,
+            },
+        ]
+    },
 }
+
 
 export default nextConfig;
