@@ -22,6 +22,7 @@ import { useSession } from "next-auth/react";
 
 export default function Navbar() {
     const { data: session } = useSession();
+    const user = session?.user.data.user
 
     return (
         <nav className="sticky  top-0 z-50 border-b bg-white px-4 md:px-6 py-3">
@@ -29,9 +30,9 @@ export default function Navbar() {
 
                 {/* Left */}
                 <div className="flex items-center gap-2">
-                    <div className="text-xl font-bold text-blue-600">🌐</div>
+                    <div className=" block sm:hidden lg:block text-xl font-bold text-blue-600">🌐</div>
 
-                    <h1 className="hidden md:block text-xl font-bold text-slate-900">
+                    <h1 className=" hidden sm:block text-xl font-bold text-slate-900">
                         Social App
                     </h1>
                 </div>
@@ -69,18 +70,18 @@ export default function Navbar() {
                     <DropdownMenuTrigger asChild>
                         <button className="flex items-center gap-2 border rounded-full px-3 py-2 shadow-sm hover:bg-slate-50 transition">
 
-                            {session?.user.data.user.photo && (
+                            {user?.photo && (
                                 <Image
-                                    src={session.user.data.user.photo}
+                                    src={user.photo}
                                     alt="user"
                                     width={32}
                                     height={32}
-                                    className="rounded-full object-cover"
+                                    className="hidden md:block rounded-full object-cover"
                                 />
                             )}
 
                             <span className="hidden xl:block text-sm font-medium">
-                                {session?.user.data.user.name}
+                                {user?.name}
                             </span>
 
                             <Menu size={18} className="text-slate-600" />

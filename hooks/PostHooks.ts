@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { api, createPostApi } from "@/services/PostServices";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PostActions } from "@/services/PostServices";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { toast } from "sonner";
 
 export function usePosts(endPoint: string, queryKey: string, initialData?: unknown) {
@@ -18,6 +18,10 @@ export function usePosts(endPoint: string, queryKey: string, initialData?: unkno
                 },
             });
             if (!res.ok) throw new Error("Failed to fetch posts");
+            if (res.status === 401) {
+                signOut()
+                throw new Error("Unauthorized");
+            }
             return res.json();
         },
         initialData,
@@ -27,16 +31,19 @@ export function usePosts(endPoint: string, queryKey: string, initialData?: unkno
 
 type PostActionParams = {
     postId: string;
-    token: string;
     endpoint: string;
 };
 
 export function usePostAction() {
+    const { data: session } = useSession();
+    const token = session?.user.data.token
+
     const queryClient = useQueryClient();
 
+
     return useMutation({
-        mutationFn: ({ postId, token, endpoint }: PostActionParams) =>
-            PostActions({ postId, token, endpoint }),
+        mutationFn: ({ postId, endpoint }: PostActionParams) =>
+            PostActions({ postId, endpoint, token }),
 
         onSuccess: () => {
             queryClient.invalidateQueries({
@@ -49,17 +56,22 @@ export function usePostAction() {
                 duration: 1500,
             });
         },
+        onError: () => {
+            toast.error("Something went wrong");
+        },
 
 
     });
 }
+
 
 type CreatePostParams = {
     token: string | undefined;
     formData: FormData;
 };
 
-export function useCreatePost() {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function useCreatePost(options: any) {
     const queryClient = useQueryClient();
 
     return useMutation({
@@ -69,7 +81,7 @@ export function useCreatePost() {
                 formData,
             }),
 
-        onSuccess: () => {
+        onSuccess: (data, variables ,context) => {
             queryClient.invalidateQueries({
                 queryKey: ["posts"],
             });
@@ -77,6 +89,8 @@ export function useCreatePost() {
             toast.success("Post created", {
                 duration: 1500,
             });
+
+            options?.onSuccess?.(data, variables, context)
         },
 
         onError: () => {
@@ -84,4 +98,6 @@ export function useCreatePost() {
         },
     });
 }
+
+
 

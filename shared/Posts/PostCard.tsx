@@ -27,7 +27,7 @@ interface PostCardProps {
     token: string
 }
 
-export default function PostCard({ post, id, token }: PostCardProps) {
+export default function PostCard({ post, id }: PostCardProps) {
 
     const { mutate } = usePostAction()
 
@@ -61,7 +61,7 @@ export default function PostCard({ post, id, token }: PostCardProps) {
 
 
     return (
-        <div className="mx-10 rounded-2xl border my-6  p-4 shadow-lg">
+        <div className=" rounded-2xl border my-6  p-4 shadow-lg">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -160,7 +160,7 @@ export default function PostCard({ post, id, token }: PostCardProps) {
 
                     {/* Like Button */}
                     <button
-                        onClick={() => mutate({ postId: post._id, token: token, endpoint: "like" })}
+                        onClick={() => mutate({ postId: post._id, endpoint: "like" })}
                         className="flex items-center gap-2 transition hover:text-red-500">
                         <Heart
                             className={`h-5 w-5 ${post.likes.includes(id!)
@@ -184,7 +184,7 @@ export default function PostCard({ post, id, token }: PostCardProps) {
 
                 {/* Bookmark Button */}
                 <button
-                    onClick={() => mutate({ postId: post._id, token: token, endpoint: "bookmark" })}
+                    onClick={() => mutate({ postId: post._id, endpoint: "bookmark" })}
                     className="transition hover:text-yellow-500">
                     <BookmarkIcon className="h-5 w-5" />
                 </button>

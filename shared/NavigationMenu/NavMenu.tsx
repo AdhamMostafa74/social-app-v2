@@ -28,7 +28,7 @@ export default function NavMenu() {
             icon: Sparkles,
         },
         {
-            href: "/home/postfeed",
+            href: "/home/myposts",
             label: "My Posts",
             icon: FileText,
         },

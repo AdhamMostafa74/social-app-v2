@@ -1,4 +1,5 @@
 import NavMenu from "@/shared/NavigationMenu/NavMenu";
+import CreatePost from "@/shared/Posts/CreatePost";
 
 export default function HomeLayout({
     children,
@@ -9,9 +10,12 @@ export default function HomeLayout({
         <div className="min-h-screen  ">
             <div className="w-full flex lg:max-w-[80%] mx-auto">
                 <NavMenu />
-                <main className="  p-6 min-h-screen">
-                    {children}
-                </main>
+                <div className="flex flex-col mx-auto justify-center sm:w-full  lg:w-[60%] items-center p-10">
+                    <CreatePost />
+                    <main className="min-h-screen w-full">
+                        {children}
+                    </main>
+                </div>
             </div>
         </div>
     );
