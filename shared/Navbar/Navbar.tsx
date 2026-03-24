@@ -18,11 +18,31 @@ import {
     DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import { useState } from "react";
+import SettingsPanel from "../SettingsOverlay/SettingsOverlay";
+import { useGetProfile } from "@/hooks/UserHooks";
 
 export default function Navbar() {
+
+    const [openSettings, setOpenSettings] = useState(false);
+
+
     const { data: session } = useSession();
     const user = session?.user.data.user
+
+    const { data: profileData } = useGetProfile()
+
+
+    const handleSignOut = () => {
+        signOut()
+    }
+
+    const handleSettings = () => {
+        setOpenSettings(true)
+    }
+
+
 
     return (
         <nav className="sticky  top-0 z-50 border-b bg-white px-4 md:px-6 py-3">
@@ -72,16 +92,16 @@ export default function Navbar() {
 
                             {user?.photo && (
                                 <Image
-                                    src={user.photo}
+                                    src={profileData?.data.user?.photo ?? user?.photo}
                                     alt="user"
                                     width={32}
                                     height={32}
-                                    className="hidden md:block rounded-full object-cover"
+                                    className="hidden md:block w-8 h-8 rounded-full object-cover"
                                 />
                             )}
 
                             <span className="hidden xl:block text-sm font-medium">
-                                {user?.name}
+                                {profileData?.data.user?.name}
                             </span>
 
                             <Menu size={18} className="text-slate-600" />
@@ -89,18 +109,32 @@ export default function Navbar() {
                     </DropdownMenuTrigger>
 
                     <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuItem className="cursor-pointer">
+                        <DropdownMenuItem
+                            onClick={handleSettings}
+                            className="cursor-pointer hover:bg-gray-200 transition-all duration-300">
                             <Settings className="mr-2 h-4 w-4" />
                             Settings
                         </DropdownMenuItem>
 
-                        <DropdownMenuItem className="cursor-pointer text-red-500 focus:text-red-500">
+                        <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-500 focus:text-red-500  hover:bg-red-100 transition-all duration-300">
                             <LogOut className="mr-2 h-4 w-4" />
                             Sign out
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
+            <SettingsPanel
+                userImage={profileData?.data?.user?.photo ?? ''}
+                isOpen={openSettings}
+                onClose={() => setOpenSettings(false)
+
+                }
+
+            />
+
+
         </nav>
+
+
     );
 }

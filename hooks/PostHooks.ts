@@ -28,6 +28,27 @@ export function usePosts(endPoint: string, queryKey: string, initialData?: unkno
         enabled: !!session?.user?.data?.token,
     });
 }
+export function useBookmarks(endPoint: string,) {
+    const { data: session } = useSession();
+
+
+    return useQuery({
+        queryKey: ["bookmarks"],
+        queryFn: async () => {
+            const res = await fetch(`${api}${endPoint}`, {
+                headers: {
+                    Authorization: `Bearer ${session?.user?.data?.token}`,
+                },
+            });
+            if (!res.ok) throw new Error("Failed to fetch posts");
+            // if (res.status === 401) {
+            //     signOut()
+            //     throw new Error("Unauthorized");
+            // }
+            return res.json();
+        },
+    });
+}
 
 type PostActionParams = {
     postId: string;
@@ -81,7 +102,7 @@ export function useCreatePost(options: any) {
                 formData,
             }),
 
-        onSuccess: (data, variables ,context) => {
+        onSuccess: (data, variables, context) => {
             queryClient.invalidateQueries({
                 queryKey: ["posts"],
             });

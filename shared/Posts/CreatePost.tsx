@@ -31,6 +31,7 @@ import { useSession } from "next-auth/react";
 import { privacyConfig } from "../privacyOptions/Privacy";
 import TopLoader from "../Loader/Loader";
 import { FaSpinner } from "react-icons/fa";
+import { useGetProfile } from "@/hooks/UserHooks";
 
 
 type Privacy = "public" | "following" | "only_me";
@@ -46,6 +47,9 @@ export default function CreatePost() {
 
     const { data: session } = useSession()
     const user = session?.user.data.user
+
+    const { data: profileData } = useGetProfile()
+
 
     const firstName = user ? user!.name.split(" ")[0] : '';
 
@@ -124,8 +128,8 @@ export default function CreatePost() {
                         <div className="rounded-2xl w-full border bg-white p-4 shadow-lg cursor-pointer">
                             <div className="flex items-center gap-3">
                                 <Image
-                                    src={user!.photo}
-                                    alt={user!.name}
+                                    src={profileData?.data.user?.photo ?? user?.photo}
+                                    alt={profileData?.data.user?.name ?? user?.name}
                                     width={48}
                                     height={48}
                                     className="h-12 w-12 rounded-full object-cover"
@@ -153,8 +157,8 @@ export default function CreatePost() {
                         <div className="flex items-center justify-between pt-4">
                             <div className="flex items-center gap-3">
                                 <Image
-                                    src={user!.photo}
-                                    alt={user!.name}
+                                    src={profileData?.data.user?.photo}
+                                    alt={profileData?.data.user?.name}
                                     width={44}
                                     height={44}
                                     className="h-11 w-11 rounded-full object-cover"

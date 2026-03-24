@@ -66,11 +66,12 @@ export default function PostCard({ post, id }: PostCardProps) {
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <Image
+                        loading="eager"
                         src={post.user.photo}
                         alt={post.user.name}
                         width={48}
                         height={48}
-                        className="h-12 w-12 rounded-full object-cover"
+                        className="h-12 w-12 rounded-full object-cover "
                     />
 
                     <div>
