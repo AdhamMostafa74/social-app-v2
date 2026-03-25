@@ -14,6 +14,23 @@ export async function GetUserData(token: string | undefined) {
 
     return res.json();
 }
+export async function FollowUser(token: string | undefined, userId: string) {
+
+    const res = await fetch(`${api}users/${userId}/follow`, {
+        method: "PUT",
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    if (!res.ok) {
+        throw new Error("Action failed");
+    }
+
+    return res.json();
+}
+
+
 export async function ChangeUserData({
     token,
     data,

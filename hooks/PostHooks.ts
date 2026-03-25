@@ -41,10 +41,6 @@ export function useBookmarks(endPoint: string,) {
                 },
             });
             if (!res.ok) throw new Error("Failed to fetch posts");
-            // if (res.status === 401) {
-            //     signOut()
-            //     throw new Error("Unauthorized");
-            // }
             return res.json();
         },
     });
@@ -69,6 +65,11 @@ export function usePostAction() {
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["posts"],
+                exact: false,
+                refetchType: "active",
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["bookmarks"],
                 exact: false,
                 refetchType: "active",
             });

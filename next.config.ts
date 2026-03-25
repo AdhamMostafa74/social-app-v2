@@ -16,6 +16,12 @@ const nextConfig: NextConfig = {
                 pathname: "/**",
 
             },
+            {
+                protocol: "https",
+                hostname: "route-posts.routemisr.com",
+                pathname: "/**",
+
+            },
         ],
     },
 

@@ -1,17 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { ChevronDown, Upload } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ChevronDown, Upload, Eye, EyeOff, Trash2Icon } from "lucide-react";
 import clsx from "clsx";
 import { useChangePassword, useUploadPhoto } from "@/hooks/UserHooks";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { Eye, EyeOff } from "lucide-react";
 
 // ================= TYPES =================
 type Props = {
@@ -26,16 +19,12 @@ export default function SettingsPanel({ isOpen, onClose, userImage }: Props) {
     const [showPassword, setShowPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
 
-    // IMAGE
     const [image, setImage] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const fileRef = useRef<HTMLInputElement | null>(null);
 
-    // PASSWORD
     const [form, setForm] = useState({ password: "", newPassword: "" });
     const [error, setError] = useState<string | null>(null);
-
-    const { data: session } = useSession();
 
     const { mutate: changePassword, isPending: passwordLoading } = useChangePassword();
     const { mutate: uploadPhoto, isPending: imageLoading } = useUploadPhoto();
@@ -44,7 +33,6 @@ export default function SettingsPanel({ isOpen, onClose, userImage }: Props) {
         setOpenSection((prev) => (prev === section ? null : section));
     };
 
-    // ================= VALIDATION =================
     const validatePassword = (password: string) => {
         const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
         return regex.test(password);
@@ -97,10 +85,36 @@ export default function SettingsPanel({ isOpen, onClose, userImage }: Props) {
         });
     };
 
-    return (
-        <Sheet open={isOpen} onOpenChange={onClose}>
-            <SheetContent side="right" className="w-95 sm:w-105 p-0">
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
 
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [isOpen]);
+
+    return (
+        <>
+            {/* BACKDROP */}
+            <div
+                onClick={onClose}
+                className={clsx(
+                    "fixed inset-0 bg-black/40 z-40 transition-all duration-500",
+                    isOpen ? "opacity-100 visible" : "opacity-0 invisible"
+                )}
+            />
+
+            {/* SHEET */}
+            <div
+                className={clsx(
+                    "fixed top-0 right-0 h-full w-95 sm:w-105 bg-white z-50 transition-transform duration-500",
+                    isOpen ? "translate-x-0" : "translate-x-full"
+                )}
+            >
                 {/* HEADER */}
                 <div className="flex items-center justify-between px-6 py-4 border-b">
                     <h2 className="font-semibold text-lg">Settings</h2>
@@ -126,7 +140,7 @@ export default function SettingsPanel({ isOpen, onClose, userImage }: Props) {
 
                         <div
                             className={clsx(
-                                "transition-all duration-300 ease-in-out overflow-hidden",
+                                "transition-all duration-500 ease-in-out overflow-hidden",
                                 openSection === "image"
                                     ? "max-h-125 opacity-100"
                                     : "max-h-0 opacity-0"
@@ -136,10 +150,21 @@ export default function SettingsPanel({ isOpen, onClose, userImage }: Props) {
 
                                 {/* AVATAR */}
                                 <div className="flex justify-center">
-                                    <Avatar className="w-20 h-20">
-                                        <AvatarImage src={userImage} />
-                                        <AvatarFallback>U</AvatarFallback>
-                                    </Avatar>
+                                    <div className="w-20 h-20 rounded-full overflow-hidden border">
+                                        {userImage ? (
+                                            <Image
+                                                src={userImage}
+                                                alt="avatar"
+                                                width={80}
+                                                height={80}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="flex items-center justify-center w-full h-full text-gray-400">
+                                                U
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {/* INPUT */}
@@ -151,12 +176,12 @@ export default function SettingsPanel({ isOpen, onClose, userImage }: Props) {
                                     onChange={handleImage}
                                 />
 
-                                <Button
+                                <button
                                     onClick={handleSelect}
-                                    className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                                    className="w-full bg-blue-500 hover:bg-blue-600 transition-all duration-300 text-white py-2 rounded-md"
                                 >
                                     Change Photo
-                                </Button>
+                                </button>
 
                                 {/* PREVIEW */}
                                 {preview && (
@@ -165,27 +190,28 @@ export default function SettingsPanel({ isOpen, onClose, userImage }: Props) {
                                             src={preview}
                                             alt="Preview"
                                             width={400}
-                                            height={200}
-                                            className="w-full h-40 object-cover rounded-md"
+                                            height={400}
+                                            className="w-full h-70 object-contain rounded-md"
                                         />
 
                                         <div className="flex gap-2">
-                                            <Button
+                                            <button
                                                 onClick={handleUpload}
                                                 disabled={imageLoading}
-                                                className="flex-1 bg-blue-500 hover:bg-blue-600 text-white"
+                                                className="flex-1 bg-blue-500 hover:bg-blue-600 transition-all duration-300 text-white py-2 rounded-md flex items-center justify-center gap-2"
                                             >
-                                                <Upload className="mr-2 h-4 w-4" />
+                                                <Upload size={16} />
                                                 {imageLoading ? "Uploading..." : "Upload Photo"}
-                                            </Button>
+                                            </button>
 
-                                            <Button
-                                                variant="ghost"
-                                                className="flex-1 text-red-500"
+                                            <button
+                                                className="flex-1 bg-red-300 text-white hover:bg-red-500 transition-all duration-300 py-2 rounded-md flex items-center justify-center gap-2"
                                                 onClick={handleRemove}
+
                                             >
+                                                <Trash2Icon size={16} />
                                                 Remove
-                                            </Button>
+                                            </button>
                                         </div>
                                     </div>
                                 )}
@@ -221,14 +247,15 @@ export default function SettingsPanel({ isOpen, onClose, userImage }: Props) {
                             <div className="p-4 pt-0 space-y-3">
 
                                 <div className="space-y-1">
-                                    <Label>Old Password</Label>
+                                    <label className="text-sm">Old Password</label>
 
                                     <div className="relative">
-                                        <Input
+                                        <input
                                             type={showPassword ? "text" : "password"}
                                             name="password"
                                             value={form.password}
                                             onChange={handleChange}
+                                            className="w-full border rounded-md px-3 py-2 pr-10"
                                         />
 
                                         <button
@@ -236,21 +263,21 @@ export default function SettingsPanel({ isOpen, onClose, userImage }: Props) {
                                             onClick={() => setShowPassword((prev) => !prev)}
                                             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
                                         >
-                                            {showPassword ? <EyeOff className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black"
-                                                size={18} /> : <Eye className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black" size={18} />}
+                                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                         </button>
                                     </div>
                                 </div>
 
                                 <div className="space-y-1">
-                                    <Label>New Password</Label>
+                                    <label className="text-sm">New Password</label>
 
                                     <div className="relative">
-                                        <Input
+                                        <input
                                             type={showNewPassword ? "text" : "password"}
                                             name="newPassword"
                                             value={form.newPassword}
                                             onChange={handleChange}
+                                            className="w-full border rounded-md px-3 py-2 pr-10"
                                         />
 
                                         <button
@@ -258,9 +285,7 @@ export default function SettingsPanel({ isOpen, onClose, userImage }: Props) {
                                             onClick={() => setShowNewPassword((prev) => !prev)}
                                             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
                                         >
-                                            {showNewPassword ? <EyeOff className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black"
-                                                size={18} /> : <Eye
-                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black" size={18} />}
+                                            {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                         </button>
                                     </div>
                                 </div>
@@ -271,20 +296,20 @@ export default function SettingsPanel({ isOpen, onClose, userImage }: Props) {
                                     </p>
                                 )}
 
-                                <Button
+                                <button
                                     onClick={handlePassword}
                                     disabled={passwordLoading}
-                                    className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                                    className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md"
                                 >
                                     {passwordLoading ? "Saving..." : "Update Password"}
-                                </Button>
+                                </button>
 
                             </div>
                         </div>
                     </div>
 
                 </div>
-            </SheetContent>
-        </Sheet>
+            </div>
+        </>
     );
 }

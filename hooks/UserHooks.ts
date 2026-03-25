@@ -1,5 +1,5 @@
 import { api } from "@/services/PostServices";
-import { ChangeUserData, GetUserData } from "@/services/userServices";
+import { ChangeUserData, FollowUser, GetUserData } from "@/services/userServices";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
@@ -89,11 +89,32 @@ export function useUploadPhoto() {
         },
     });
 }
+export function useFollow() {
+    const { data: session, update } = useSession();
+    const token = session?.user?.data?.token;
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationKey: ["followUser"],
+        mutationFn: (userId: string) => {
+            return FollowUser(token, userId)
+        },
+
+        onSuccess: () => {
+            toast.success("User followed successfully");
+            queryClient.invalidateQueries({ queryKey: ["getSuggestions"] });
+            update();
+        },
+
+        onError: () => {
+            toast.error("Failed to follow user");
+        },
+    });
+}
 
 export function useGetProfile() {
     const { data: session } = useSession();
     const token = session?.user?.data?.token;
-
 
 
     return useQuery({

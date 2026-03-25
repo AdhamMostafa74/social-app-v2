@@ -4,7 +4,8 @@ import Image from "next/image";
 import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Suggestion } from "@/types/Suggestions";
-import { useGetSuggestions } from "@/hooks/UserHooks";
+import { useFollow, useGetSuggestions } from "@/hooks/UserHooks";
+import { FaSpinner } from "react-icons/fa";
 
 type SuggestionMenuProps = {
     compact?: boolean;
@@ -16,9 +17,10 @@ export default function SuggestionMenu({
     maxItems,
 }: SuggestionMenuProps) {
     const [search, setSearch] = useState("");
+    const [activeUser, setActiveUser] = useState<string | null>(null);
 
     const { data, isLoading } = useGetSuggestions();
-    console.log(data)
+    const { mutate: followUser, isPending } = useFollow();
 
     const filteredUsers = useMemo(() => {
         const users = (data == undefined ? [] : data.data.suggestions).filter(
@@ -29,6 +31,17 @@ export default function SuggestionMenu({
 
         return maxItems ? users.slice(0, maxItems) : users;
     }, [search, maxItems, data]);
+
+
+    const handleFollow = (userId: string) => {
+        setActiveUser(userId)
+        followUser(userId, {
+            onSettled: () => setActiveUser(null)
+
+        })
+
+    }
+
 
     return (
         <div className="space-y-3">
@@ -120,8 +133,11 @@ export default function SuggestionMenu({
                                 </div>
                             </div>
 
-                            <button className="px-3 py-1 text-xs rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition">
-                                Follow
+                            <button
+                                disabled={isPending && activeUser === user._id}
+                                onClick={() => handleFollow(user._id)}
+                                className="px-3 py-1 text-xs rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition disabled:bg-blue-300">
+                                {isPending && activeUser === user._id ? <FaSpinner className="animate-spin" /> : "Follow"}
                             </button>
                         </div>
                     ))

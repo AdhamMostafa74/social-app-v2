@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { usePostAction } from "@/hooks/PostHooks";
 import { privacyConfig } from "../privacyOptions/Privacy";
+import { useSession } from "next-auth/react";
 
 
 interface PostCardProps {
@@ -29,6 +30,8 @@ interface PostCardProps {
 
 export default function PostCard({ post, id }: PostCardProps) {
 
+    const { data: session } = useSession()
+    const user = session?.user?.data?.user
     const { mutate } = usePostAction()
 
     const formatRelativeTime = (date: string) => {
@@ -163,12 +166,13 @@ export default function PostCard({ post, id }: PostCardProps) {
                     <button
                         onClick={() => mutate({ postId: post._id, endpoint: "like" })}
                         className="flex items-center gap-2 transition hover:text-red-500">
-                        <Heart
-                            className={`h-5 w-5 ${post.likes.includes(id!)
-                                ? "fill-red-500 text-red-500"
-                                : "text-gray-600"
-                                }`}
-                        />
+                        {
+                            <Heart
+                                className={`h-5 w-5 ${post.likes.includes(user?._id ?? '')
+                                    ? "fill-red-500 "
+                                    : "text-gray-600"
+                                    }`}
+                            />}
                         <span className="font-medium">{post.likesCount}</span>
                     </button>
 
@@ -186,8 +190,8 @@ export default function PostCard({ post, id }: PostCardProps) {
                 {/* Bookmark Button */}
                 <button
                     onClick={() => mutate({ postId: post._id, endpoint: "bookmark" })}
-                    className="transition hover:text-yellow-500">
-                    <BookmarkIcon className="h-5 w-5" />
+                >
+                    <BookmarkIcon className={`h-5 w-5 ${post.bookmarked ? " fill-yellow-500 hover:fill-yellow-600" : "transition hover:text-yellow-500"}`} />
                 </button>
             </div>
         </div>

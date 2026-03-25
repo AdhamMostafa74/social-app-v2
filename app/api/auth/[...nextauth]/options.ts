@@ -45,9 +45,6 @@ export const options: NextAuthOptions = {
                     },
                 });
 
-                console.log("credentials", credentials);
-                console.log("status", res.status);
-                console.log("response", await res.clone().text());
 
                 if (!res.ok) return null;
 
